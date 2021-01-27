@@ -2,7 +2,7 @@ import React from "react"
 import SVG from "react-inlinesvg"
 import { sizing } from "../../theme"
 
-export const FdSvgIcon: React.FC<{ svg: string }> = ({ svg }) => {
+export const SSvgIcon: React.FC<{ svg: string }> = ({ svg }) => {
   return (
     <SVG
       src={svg}

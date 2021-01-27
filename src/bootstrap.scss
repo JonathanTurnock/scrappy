@@ -1,0 +1,30 @@
+@import "~bootstrap/dist/css/bootstrap-utilities.css";
+@import "~bootstrap/dist/css/bootstrap-grid.css";
+
+.bg-light-10 {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.bg-light-20 {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.bg-dark-10 {
+  background-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+.bg-dark-20 {
+  background-color: rgba(0, 0, 0, 0.2) !important;
+}
+
+.opacity-90 {
+  opacity: 90% !important;
+}
+
+.opacity-80 {
+  opacity: 80% !important;
+}
+
+.w-500px {
+  width: 500px;
+}

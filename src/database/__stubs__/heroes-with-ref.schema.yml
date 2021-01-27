@@ -1,0 +1,25 @@
+---
+title: hero schema
+version: 0
+description: describes a simple hero
+type: object
+properties:
+  name:
+    type: string
+    primary: true
+  color:
+    type: string
+  healthpoints:
+    type: number
+    minimum: 0
+    maximum: 100
+  skills:
+    type: array
+    items:
+      $ref: ./skills.schema.yml
+required:
+  - color
+encrypted:
+  - secret
+attachments:
+  encrypted: true

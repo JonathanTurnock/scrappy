@@ -1,2 +1,2 @@
-export * from "./FdHorizontalActionStack"
-export * from "./FdFlex"
+export * from "./SHorizontalActionStack"
+export * from "./SFlex"

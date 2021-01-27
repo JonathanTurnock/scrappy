@@ -1,1 +1,1 @@
-export * from "./FdSvgIcon"
+export * from "./SSvgIcon"

@@ -1,0 +1,1 @@
+export { ScrapListPage } from "./ScrapListPage"

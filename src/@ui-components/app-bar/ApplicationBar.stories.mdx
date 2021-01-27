@@ -1,0 +1,25 @@
+import { Canvas, Meta, Story } from "@storybook/addon-docs/blocks"
+import { ApplicationBar } from "./ApplicationBar"
+import { SFlex } from "../layouts"
+
+<Meta title="ApplicationBar" component={ApplicationBar} />
+
+# Action Bar
+
+The Application bar is the top level page bar which is always shown to the users.
+
+From here users can navigate back to the main menu using the waffle
+
+<Canvas>
+  <Story name="Composition">
+    <SFlex>
+      <ApplicationBar name={"Scrappy"} onExit={() => alert(`Lets Exit`)} />
+    </SFlex>
+  </Story>
+</Canvas>
+
+## Example Usage
+
+```typescript jsx
+<ApplicationBar name={"Scrappy"} onExit={() => alert(`Lets Exit`)} />
+```
