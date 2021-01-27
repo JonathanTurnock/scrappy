@@ -1,0 +1,4 @@
+typings.d.ts
+*.stories.ts
+node_modules/**/*
+build/**/*

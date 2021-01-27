@@ -2,27 +2,21 @@
   "name": "scrappy",
   "version": "0.1.0",
   "private": true,
-  "dependencies": {
-    "@reduxjs/toolkit": "^1.2.5",
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.3.2",
-    "@testing-library/user-event": "^7.1.2",
-    "@types/jest": "^24.0.0",
-    "@types/node": "^12.0.0",
-    "@types/react": "^16.9.0",
-    "@types/react-dom": "^16.9.0",
-    "@types/react-redux": "^7.1.7",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1",
-    "react-redux": "^7.2.0",
-    "react-scripts": "4.0.1",
-    "typescript": "~3.8.2"
-  },
   "scripts": {
+    "postinstall": "yarn audit",
+    "prettier": "prettier --check src",
+    "prettier:fix": "prettier --write src",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "test": "react-scripts test --watchAll=false",
+    "predeploy": "npm run build",
+    "predeploy:local": "npm run build",
+    "deploy:local": "shx rm -rf W:/scrappy && shx cp -R ./build W:/scrappy",
+    "eject": "react-scripts eject",
+    "storybook": "start-storybook -p 6006 -s public",
+    "build-storybook": "build-storybook -s public"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -38,5 +32,62 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "dependencies": {
+    "@fluentui/react": "^7.157.1",
+    "@fluentui/react-hooks": "^8.0.0-beta.0",
+    "@monaco-editor/react": "^4.0.7",
+    "@prezly/react-promise-modal": "^0.2.0",
+    "@reduxjs/toolkit": "^1.2.5",
+    "@uifabric/react-cards": "^0.115.9",
+    "bootstrap": "^5.0.0-beta1",
+    "lodash": "^4.17.20",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "react-redux": "^7.2.0",
+    "react-scripts": "4.0.1",
+    "styled-components": "^5.2.1",
+    "ts-key-enum": "^2.0.7",
+    "typescript": "~3.8.2"
+  },
+  "devDependencies": {
+    "@storybook/addon-actions": "^6.1.15",
+    "@storybook/addon-docs": "^6.1.15",
+    "@storybook/addon-essentials": "^6.1.15",
+    "@storybook/addon-links": "^6.1.15",
+    "@storybook/node-logger": "^6.1.15",
+    "@storybook/preset-create-react-app": "^3.1.5",
+    "@storybook/preset-scss": "^1.0.3",
+    "@storybook/react": "^6.1.15",
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.3.2",
+    "@testing-library/user-event": "^7.1.2",
+    "@types/jest": "^24.0.0",
+    "@types/lodash": "^4.14.168",
+    "@types/node": "^12.0.0",
+    "@types/react": "^16.9.0",
+    "@types/react-dom": "^16.9.0",
+    "@types/react-redux": "^7.1.7",
+    "@typescript-eslint/eslint-plugin": "^4.14.1",
+    "@typescript-eslint/parser": "^4.14.1",
+    "eslint": "^7.18.0",
+    "eslint-config-prettier": "^7.2.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-prettier": "^3.3.1",
+    "husky": "^4.3.8",
+    "prettier": "^2.2.1",
+    "shelljs": "^0.8.4",
+    "shx": "^0.3.3"
+  },
+  "resolutions": {
+    "@storybook/react/babel-loader": "8.1.0",
+    "minimist": ">=1.2.3",
+    "ini": ">1.3.6"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn lint && yarn prettier",
+      "pre-push": "yarn audit && yarn test"
+    }
   }
 }
