@@ -2,8 +2,8 @@ import { RxSchema } from "rxdb"
 import $RefParser from "@apidevtools/json-schema-ref-parser"
 
 /**
- * Takes the path to the schema file and parses it stripping out references and flattening the
- * schema ready to be consumed as an RxSchema
+ * Takes the path to the scrapsCollection file and parses it stripping out references and flattening the
+ * scrapsCollection ready to be consumed as an RxSchema
  *
  * @param schemaFile Path to the Schema file
  */

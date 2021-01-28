@@ -6,17 +6,23 @@ import { store } from "./app/store"
 import { Provider } from "react-redux"
 import * as serviceWorker from "./serviceWorker"
 import { DatabaseProvider } from "./database"
+import { HashRouter } from "react-router-dom"
+import { scrapsCollection } from "./scraps.collection"
+import { RxCollectionCreatorBase } from "rxdb/dist/types/types"
 
 const DATABASE_NAME = "scrappydb"
-const SCHEMAS = {
-  scraps: process.env.PUBLIC_URL + "/schemas/scrap.schema.yml",
+const SCHEMAS: Record<string, RxCollectionCreatorBase> = {
+  scraps: scrapsCollection,
 }
-const DATABASE_OPTS = { inMemory: true }
+
+const DATABASE_OPTS = { inMemory: false, password: undefined }
 
 ReactDOM.render(
   <DatabaseProvider databaseName={DATABASE_NAME} schemas={SCHEMAS} options={DATABASE_OPTS}>
     <Provider store={store}>
-      <App />
+      <HashRouter>
+        <App />
+      </HashRouter>
     </Provider>
   </DatabaseProvider>,
   document.getElementById("app-root")

@@ -3,7 +3,7 @@ import { resolve } from "path"
 
 const expectedSchema = {
   schema: {
-    title: "hero schema",
+    title: "hero scrapsCollection",
     version: 0,
     description: "describes a simple hero",
     type: "object",
@@ -44,19 +44,23 @@ const expectedSchema = {
 }
 
 describe("hydrateSchemas", () => {
-  it("should hydrate the schema from json file", async () => {
-    const hydratedSchema = await hydrateSchema(resolve(__dirname, "./__stubs__/heroes.schema.json"))
-    expect(hydratedSchema).toEqual(expectedSchema)
-  })
-
-  it("should hydrate the schema from yaml file", async () => {
-    const hydratedSchema = await hydrateSchema(resolve(__dirname, "./__stubs__/scrap.schema.yml"))
-    expect(hydratedSchema).toEqual(expectedSchema)
-  })
-
-  it("should hydrate the schema from multiple yaml file", async () => {
+  it("should hydrate the scrapsCollection from json file", async () => {
     const hydratedSchema = await hydrateSchema(
-      resolve(__dirname, "./__stubs__/heroes-with-ref.schema.yml")
+      resolve(__dirname, "./__stubs__/heroes.scrapsCollection.ts")
+    )
+    expect(hydratedSchema).toEqual(expectedSchema)
+  })
+
+  it("should hydrate the scrapsCollection from yaml file", async () => {
+    const hydratedSchema = await hydrateSchema(
+      resolve(__dirname, "./__stubs__/scrap.scrapsCollection.yml")
+    )
+    expect(hydratedSchema).toEqual(expectedSchema)
+  })
+
+  it("should hydrate the scrapsCollection from multiple yaml file", async () => {
+    const hydratedSchema = await hydrateSchema(
+      resolve(__dirname, "./__stubs__/heroes-with-ref.scrapsCollection.yml")
     )
     expect(hydratedSchema).toEqual(expectedSchema)
   })

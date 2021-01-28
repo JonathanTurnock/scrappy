@@ -1,5 +1,5 @@
 ---
-title: hero schema
+title: hero scrapsCollection
 version: 0
 description: describes a simple hero
 type: object
@@ -16,7 +16,7 @@ properties:
   skills:
     type: array
     items:
-      $ref: ./skills.schema.yml
+      $ref: ./skills.scrapsCollection.yml
 required:
   - color
 encrypted:

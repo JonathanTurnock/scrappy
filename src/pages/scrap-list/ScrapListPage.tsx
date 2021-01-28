@@ -1,59 +1,95 @@
-import React, { useEffect, useMemo, useState } from "react"
-import { ApplicationBar } from "../../@ui-components/app-bar"
-import styled from "styled-components"
+import React, { useMemo, useState } from "react"
 import {
+  Breadcrumb,
   DetailsList,
   IColumn,
   Icon,
-  Pivot,
-  PivotItem,
   SearchBox,
+  Selection,
   SelectionMode,
-  Text,
-  Breadcrumb,
+  Stack,
+  FontIcon,
+  mergeStyleSets,
 } from "@fluentui/react"
 import {
+  ActionBarContainer,
   ActionBarItem,
   fdConfirm,
   fdInput,
   SFlex,
   SHorizontalActionStack,
 } from "../../@ui-components"
-import { range, random, filter } from "lodash"
-import { LoremIpsum } from "lorem-ipsum"
 import { useAllScrapsSubscription, useScrapOperations } from "../../database"
 import { getShortId } from "../../utils/getShortId"
+import { ScrapEntity } from "../../types"
+import { useHistory } from "react-router-dom"
+import { useBoolean } from "@fluentui/react-hooks"
+import { theme } from "../../theme"
 
-const lorem = new LoremIpsum({
-  sentencesPerParagraph: {
-    max: 8,
-    min: 4,
+const classNames = mergeStyleSets({
+  fileIconHeaderIcon: {
+    padding: 0,
+    fontSize: "16px",
   },
-  wordsPerSentence: {
-    max: 16,
-    min: 4,
+  fileIconCell: {
+    textAlign: "center",
+    selectors: {
+      "&:before": {
+        content: ".",
+        display: "inline-block",
+        verticalAlign: "middle",
+        height: "100%",
+        width: "0px",
+        visibility: "hidden",
+      },
+    },
+  },
+  fileIconImg: {
+    verticalAlign: "middle",
+    maxHeight: "16px",
+    maxWidth: "16px",
+  },
+  controlWrapper: {
+    display: "flex",
+    flexWrap: "wrap",
+  },
+  exampleToggle: {
+    display: "inline-block",
+    marginBottom: "10px",
+    marginRight: "30px",
+  },
+  selectionDetails: {
+    marginBottom: "20px",
   },
 })
+const controlStyles = {
+  root: {
+    margin: "0 30px 20px 0",
+    maxWidth: "300px",
+  },
+}
 
-const Scene = styled.div`
-  flex: auto;
-  display: grid;
-  grid-template-rows: 48px auto;
-  overflow: inherit;
-`
-
-const Header = styled.header`
-  display: flex;
-  flex: auto;
-`
-
-const Main = styled.main`
-  display: flex;
-  flex: auto;
-  overflow: inherit;
-`
+const icons: Record<string, string> = {
+  markdown: "MarkDownLanguage",
+  json: "FileCode",
+  yaml: "FileYML",
+}
 
 const columns: IColumn[] = [
+  {
+    key: "icon",
+    name: "Scrap Type",
+    className: classNames.fileIconCell,
+    iconClassName: classNames.fileIconHeaderIcon,
+    iconName: "Page",
+    isIconOnly: true,
+    fieldName: "contentType",
+    minWidth: 16,
+    maxWidth: 16,
+    onRender: ({ contentType }) => {
+      return <FontIcon iconName={icons[contentType]} className={classNames.fileIconImg} />
+    },
+  },
   { key: "name", name: "Name", minWidth: 150, fieldName: "name" },
   {
     key: "created",
@@ -89,9 +125,19 @@ const columns: IColumn[] = [
 
 export const ScrapListPage: React.FC = () => {
   const scraps = useAllScrapsSubscription()
-  const { save, deleteOne } = useScrapOperations()
+  const { save, deleteOne, deleteMany } = useScrapOperations()
+  const { push, location } = useHistory()
+  const [currentSelection, setCurrentSelection] = useState<ScrapEntity[]>([])
+  const [multiSelect, { toggle: toggleMultiSelect }] = useBoolean(false)
 
-  const starredScraps = useMemo(() => filter(scraps, "starred"), [scraps])
+  const selection = useMemo(() => {
+    return new Selection<ScrapEntity>({
+      getKey: ({ id }) => id,
+      onSelectionChanged: () => {
+        setCurrentSelection(selection.getSelection() as ScrapEntity[])
+      },
+    })
+  }, [])
 
   const handleFilter = (filterText: string) => {
     console.log(filterText)
@@ -103,71 +149,89 @@ export const ScrapListPage: React.FC = () => {
       label: "Scrap Name",
     })
     if (name) {
-      const result = await save({ id: getShortId(), name, created: new Date().getTime() })
-      console.log(result)
+      await save({
+        id: getShortId(),
+        name,
+        created: new Date().getTime(),
+        content: "",
+        locked: false,
+        starred: false,
+        contentType: "markdown",
+      })
+    }
+  }
+
+  const handleRename = async () => {
+    const selectedScrap = currentSelection[0]
+    const name = await fdInput({
+      title: "Rename Scrap",
+      label: "Scrap Name",
+      defaultValue: selectedScrap.name,
+    })
+    if (name) {
+      await save({ ...selectedScrap, name })
     }
   }
 
   const handleDelete = async () => {
+    const selectedScrap = currentSelection[0]
     const confirm = await fdConfirm({
       title: "Delete Scrap",
-      text: "Are you sure you want to delete scrap?",
+      text: `Are you sure you want to delete ${selectedScrap.name}?`,
     })
-    console.log(`Deleting Scrap ${confirm}`)
+    if (confirm) {
+      await deleteOne(selectedScrap)
+    }
+  }
+
+  const handleDeleteMany = async () => {
+    const confirm = await fdConfirm({
+      title: "Delete Scraps",
+      text: `Are you sure you want to delete ${currentSelection.length} scraps?`,
+    })
+    if (confirm) {
+      await deleteMany(currentSelection)
+    }
+  }
+
+  const handleOpen = async (scrap: ScrapEntity) => {
+    push(`/scrap/${scrap.id}`, location)
   }
 
   return (
-    <Scene>
-      <Header>
-        <ApplicationBar name="sCrappy" onExit={() => console.log("Exit Clicked")} />
-      </Header>
-      <Main>
-        <div className="container">
-          <SHorizontalActionStack>
-            <SFlex>
-              <ActionBarItem icon="Add" name="New Scrap" onClick={handleAdd} />
-              <ActionBarItem icon="Delete" name="Delete Scrap" onClick={handleDelete} />
-            </SFlex>
-            <SFlex className="align-items-end justify-content-end">
-              <SearchBox
-                placeholder="Search"
-                size={25}
-                onSearch={handleFilter}
-                onClear={() => handleFilter("")}
-                underlined={true}
-              />
-            </SFlex>
-          </SHorizontalActionStack>
-          <SFlex className="p-2 justify-content-between align-items-end">
-            <Breadcrumb items={[{ key: "scraps", text: "Scraps" }]} />
-          </SFlex>
-          <Pivot>
-            <PivotItem headerText="All Scraps" itemCount={scraps.length} itemIcon="AlignJustify">
-              <DetailsList
-                selectionMode={SelectionMode.multiple}
-                items={scraps}
-                columns={columns}
-              />
-            </PivotItem>
-            <PivotItem
-              headerText="Starred Scraps"
-              itemCount={starredScraps.length}
-              itemIcon="FavoriteStar"
-            >
-              <DetailsList
-                selectionMode={SelectionMode.multiple}
-                items={starredScraps}
-                columns={columns}
-              />
-            </PivotItem>
-          </Pivot>
-          <SFlex className="justify-content-center align-items-center">
-            <Text className="p-4 text-black-50" variant={"small"}>
-              {"----sCrappy----"}
-            </Text>
-          </SFlex>
-        </div>
-      </Main>
-    </Scene>
+    <SFlex style={{ flexDirection: "column" }}>
+      <ActionBarContainer>
+        <ActionBarItem icon="Add" name="New Scrap" onClick={handleAdd} />
+        {currentSelection.length === 1 && (
+          <ActionBarItem icon="Rename" name="Rename Scrap" onClick={handleRename} />
+        )}
+        {currentSelection.length === 1 && (
+          <ActionBarItem icon="Delete" name="Delete Scrap" onClick={handleDelete} />
+        )}
+        {currentSelection.length > 1 && (
+          <ActionBarItem icon="Delete" name="Delete Scraps" onClick={handleDeleteMany} />
+        )}
+        <ActionBarItem icon="MultiSelect" name="Select" onClick={toggleMultiSelect} />
+        <SFlex className="align-items-end justify-content-end align-items-center px-2">
+          <SearchBox
+            placeholder="Search"
+            size={25}
+            onSearch={handleFilter}
+            onClear={() => handleFilter("")}
+          />
+        </SFlex>
+      </ActionBarContainer>
+      <Stack className="container">
+        <Breadcrumb items={[{ key: "scraps", text: "Scraps" }]} />
+        <DetailsList
+          // @ts-ignore
+          selection={selection}
+          items={scraps}
+          columns={columns}
+          onItemInvoked={handleOpen}
+          selectionMode={multiSelect ? SelectionMode.multiple : SelectionMode.none}
+        />
+      </Stack>
+    </SFlex>
   )
 }

@@ -1,11 +1,7 @@
 import { addRxPlugin, createRxDatabase, RxCollection, RxDatabase } from "rxdb"
-import { Aigle } from "aigle"
 import { RxCollectionCreatorBase } from "rxdb/dist/types/types"
-import { hydrateSchema } from "./helpers"
 import { RxDBValidatePlugin } from "rxdb/plugins/validate"
 import { RxDBQueryBuilderPlugin } from "rxdb/plugins/query-builder"
-
-const { mapValues } = Aigle
 
 addRxPlugin(require("pouchdb-adapter-memory"))
 addRxPlugin(require("pouchdb-adapter-idb"))
@@ -25,18 +21,19 @@ export class Database {
     this._database = _database
   }
 
-  async addSchemas(schemas: Record<string, string>) {
-    const hydratedSchemas = ((await mapValues(schemas, hydrateSchema)) as unknown) as {
-      [name: string]: RxCollectionCreatorBase
-    }
-    this._collections = await this._database.addCollections(hydratedSchemas)
+  async addSchemas(schemas: Record<string, RxCollectionCreatorBase>) {
+    this._collections = await this._database.addCollections(schemas)
   }
 
-  static async getDatabase(databaseName: string, { inMemory = false }: { inMemory: boolean }) {
+  static async getDatabase(
+    databaseName: string,
+    { inMemory = false, password }: { inMemory: boolean; password?: string }
+  ) {
     const database = await createRxDatabase({
       name: databaseName,
       adapter: inMemory ? "memory" : "idb",
       ignoreDuplicate: true,
+      password,
     })
     return new Database(database)
   }

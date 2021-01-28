@@ -1,0 +1,16 @@
+{
+  "productName": "sCrappy",
+  "directories": {
+    "output": "./dist/"
+  },
+  "files": [
+    "**/*",
+    "!**/*.ts",
+    "!*.code-workspace",
+    "!LICENSE.md",
+    "!package.json",
+    "!package-lock.json",
+    "!src/"
+  ],
+  "extraFiles": []
+}

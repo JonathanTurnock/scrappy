@@ -4,7 +4,7 @@ import { ScrapEntity } from "../../types"
 export const useScrapOperations = (): {
   save: (scrap: ScrapEntity) => Promise<ScrapEntity>
   deleteOne: (scrap: ScrapEntity) => Promise<void>
-  deleteAll: (scraps: ScrapEntity[]) => Promise<void>
+  deleteMany: (scraps: ScrapEntity[]) => Promise<void>
 } => {
   const collection = useCollection<ScrapEntity | any>("scraps")
 
@@ -16,7 +16,7 @@ export const useScrapOperations = (): {
     await collection.find({ selector: { id: scrap.id } }).remove()
   }
 
-  const deleteAll = async (scraps: ScrapEntity[]): Promise<void> => {
+  const deleteMany = async (scraps: ScrapEntity[]): Promise<void> => {
     await collection
       .find()
       .where({ id: { $in: scraps.map(({ id }) => id) } })
@@ -26,6 +26,6 @@ export const useScrapOperations = (): {
   return {
     save,
     deleteOne,
-    deleteAll,
+    deleteMany,
   }
 }
