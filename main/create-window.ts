@@ -29,7 +29,6 @@ export const createWindow = (): BrowserWindow => {
     },
     fullscreen: false,
     autoHideMenuBar: true,
-    titleBarStyle: "hidden",
   })
 
   if (isServe) {
