@@ -6,7 +6,6 @@ import appProtocol from "./main/app.protocol"
 
 info("Logging Directory", resolve(app.getPath("logs")))
 
-app.allowRendererProcessReuse = true
 protocol.registerSchemesAsPrivileged([
   {
     scheme: "app",
