@@ -12,6 +12,7 @@ protocol.registerSchemesAsPrivileged([
     privileges: { secure: true, standard: true },
   },
 ])
+
 app.on("ready", () => {
   protocol.registerFileProtocol("app", appProtocol(resolve(__dirname)))
   createWindow()

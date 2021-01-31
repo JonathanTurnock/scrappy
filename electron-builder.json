@@ -17,9 +17,9 @@
     "icon": "build/"
   },
   "mac": {
-    "icon": "build"
+    "icon": "build/"
   },
   "linux": {
-    "icon": "build"
+    "icon": "build/"
   }
 }
