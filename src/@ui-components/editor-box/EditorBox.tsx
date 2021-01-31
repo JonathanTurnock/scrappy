@@ -95,7 +95,7 @@ export const EditorBox: React.FC<IEditorBox> = ({
       height={"inherit"}
       onMount={handleEditorDidMount}
       defaultValue={defaultValue}
-      onChange={(value, ev) => {
+      onChange={(value) => {
         onChanges && onChanges(value || "")
       }}
     />

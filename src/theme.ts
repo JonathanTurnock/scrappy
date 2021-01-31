@@ -1,4 +1,14 @@
-import { getTheme, ITheme } from "@fluentui/react"
+import { getTheme, initializeIcons, ITheme, loadTheme } from "@fluentui/react"
+
+loadTheme({
+  defaultFontStyle: {
+    fontFamily:
+      '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
+    fontWeight: "regular",
+  },
+})
+
+initializeIcons("static/media/")
 
 export type IExtendedTheme = {
   sizing: {

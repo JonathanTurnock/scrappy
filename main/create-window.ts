@@ -1,43 +1,43 @@
-import { app, BrowserWindow, Menu, screen } from "electron"
+import { app, BrowserWindow, Menu } from "electron"
 import * as logger from "electron-log"
 import { isDev, isServe } from "./env-helpers"
-import { resolve } from "path"
-import { format } from "url"
 
 export let window: BrowserWindow | null = null
 
 export const createWindow = (): BrowserWindow => {
   logger.info("Creating Window")
-  const size = screen.getPrimaryDisplay().workAreaSize
+  // const size = screen.getPrimaryDisplay().workAreaSize
 
   window = new BrowserWindow({
-    x: 0,
-    y: 0,
-    width: size.width,
-    height: size.height,
+    // x: 0,
+    // y: 0,
+    // width: size.width,
+    // height: size.height,
     webPreferences: {
-      nodeIntegration: true,
-      allowRunningInsecureContent: true,
-      webSecurity: false,
+      allowRunningInsecureContent: false,
+      contextIsolation: true,
+      enableRemoteModule: false,
+      nativeWindowOpen: false,
+      nodeIntegration: false,
+      nodeIntegrationInWorker: false,
+      nodeIntegrationInSubFrames: false,
+      safeDialogs: true,
+      sandbox: true,
+      webSecurity: true,
+      webviewTag: false,
       devTools: isDev,
     },
     fullscreen: false,
     autoHideMenuBar: true,
-    titleBarStyle: "hiddenInset",
+    titleBarStyle: "hidden",
   })
 
   if (isServe) {
     logger.info('Loading from "http://localhost:3000"')
     window.loadURL("http://localhost:3000")
   } else {
-    logger.info(`Loading from ${resolve(__dirname, "../index.html")}`)
-    window.loadURL(
-      format({
-        pathname: resolve(__dirname, "../index.html"),
-        protocol: "file:",
-        slashes: true,
-      })
-    )
+    logger.info(`Loading from "app://scrappy/index.html"`)
+    window.loadURL("app://scrappy/index.html")
   }
 
   if (!isDev) {

@@ -1,11 +1,9 @@
 import React, { useMemo } from "react"
 import { Route, Switch, useHistory } from "react-router-dom"
 import { ScrapListPage, ScrapPage } from "./pages"
-import { INavLink, INavLinkGroup, initializeIcons, Nav, Text } from "@fluentui/react"
+import { INavLink, INavLinkGroup, Nav, Text } from "@fluentui/react"
 import styled from "styled-components"
 import { theme } from "./theme"
-
-initializeIcons()
 
 const AppContainer = styled.div`
   flex: auto;
@@ -52,7 +50,7 @@ const App = () => {
     <AppContainer>
       <NavFrame>
         <Text className="p-2 no-user-select" variant="xLargePlus">
-          sCrappy
+          Scrappy
         </Text>
         <Nav groups={navLinkGroups as INavLinkGroup[]} />
       </NavFrame>

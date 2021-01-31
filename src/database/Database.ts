@@ -1,11 +1,13 @@
 import { addRxPlugin, createRxDatabase, RxCollection, RxDatabase } from "rxdb"
 import { RxCollectionCreatorBase } from "rxdb/dist/types/types"
-import { RxDBValidatePlugin } from "rxdb/plugins/validate"
+import { RxDBValidateZSchemaPlugin } from "rxdb/plugins/validate-z-schema"
 import { RxDBQueryBuilderPlugin } from "rxdb/plugins/query-builder"
+import pouchdbAdapterMemory from "pouchdb-adapter-memory"
+import pouchdbAdapterIdb from "pouchdb-adapter-idb"
 
-addRxPlugin(require("pouchdb-adapter-memory"))
-addRxPlugin(require("pouchdb-adapter-idb"))
-addRxPlugin(RxDBValidatePlugin)
+addRxPlugin(pouchdbAdapterMemory)
+addRxPlugin(pouchdbAdapterIdb)
+addRxPlugin(RxDBValidateZSchemaPlugin)
 addRxPlugin(RxDBQueryBuilderPlugin)
 
 export class Database {

@@ -2,29 +2,21 @@ import React, { useMemo, useState } from "react"
 import {
   Breadcrumb,
   DetailsList,
+  FontIcon,
   IColumn,
   Icon,
+  mergeStyleSets,
   SearchBox,
   Selection,
   SelectionMode,
   Stack,
-  FontIcon,
-  mergeStyleSets,
 } from "@fluentui/react"
-import {
-  ActionBarContainer,
-  ActionBarItem,
-  fdConfirm,
-  fdInput,
-  SFlex,
-  SHorizontalActionStack,
-} from "../../@ui-components"
+import { useHistory } from "react-router-dom"
+import { useBoolean } from "@fluentui/react-hooks"
+import { ActionBarContainer, ActionBarItem, fdConfirm, fdInput, SFlex } from "../../@ui-components"
 import { useAllScrapsSubscription, useScrapOperations } from "../../database"
 import { getShortId } from "../../utils/getShortId"
 import { ScrapEntity } from "../../types"
-import { useHistory } from "react-router-dom"
-import { useBoolean } from "@fluentui/react-hooks"
-import { theme } from "../../theme"
 
 const classNames = mergeStyleSets({
   fileIconHeaderIcon: {
@@ -62,12 +54,6 @@ const classNames = mergeStyleSets({
     marginBottom: "20px",
   },
 })
-const controlStyles = {
-  root: {
-    margin: "0 30px 20px 0",
-    maxWidth: "300px",
-  },
-}
 
 const icons: Record<string, string> = {
   markdown: "MarkDownLanguage",

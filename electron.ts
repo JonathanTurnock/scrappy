@@ -1,30 +1,33 @@
 import { app, protocol } from "electron"
 import { resolve } from "path"
 import { info } from "electron-log"
-import { startServer } from "./main/start-server"
-import { localImages } from "./main/file-protocols"
 import { createWindow } from "./main/create-window"
-import { isDev } from "./main/env-helpers"
+import appProtocol from "./main/app.protocol"
 
 info("Logging Directory", resolve(app.getPath("logs")))
 
 app.allowRendererProcessReuse = true
-
-app.whenReady().then(() => {
-  protocol.registerFileProtocol("file", localImages([".png", ".jpg", ".jpeg", ".gif"]))
-})
-
+protocol.registerSchemesAsPrivileged([
+  {
+    scheme: "app",
+    privileges: { secure: true, standard: true },
+  },
+])
 app.on("ready", () => {
-  setTimeout(createWindow, 400)
-  if (!isDev) {
-    setTimeout(startServer, 400)
-  }
+  protocol.registerFileProtocol("app", appProtocol(resolve(__dirname)))
+  createWindow()
 })
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit()
   }
+})
+
+app.on("web-contents-created", (event, contents) => {
+  contents.on("will-navigate", (event) => {
+    event.preventDefault()
+  })
 })
 
 app.on("activate", () => {

@@ -1,21 +1,13 @@
 import React, { useEffect, useState } from "react"
 import { useHistory, useParams } from "react-router-dom"
 import { useScrapOperations, useScrapSubscription } from "../../database"
-import {
-  ActionBarContainer,
-  ActionBarItem,
-  fdAlert,
-  SFlex,
-  SHorizontalActionStack,
-} from "../../@ui-components"
+import { ActionBarContainer, ActionBarItem, fdAlert, SFlex } from "../../@ui-components"
 import { Breadcrumb, Dropdown, Pivot, PivotItem, Stack } from "@fluentui/react"
 import ReactMarkdown from "react-markdown"
 import { EditorBox } from "../../@ui-components/editor-box/EditorBox"
 import styled from "styled-components"
-const json2md = require("json2md")
-const YAML = require("yaml")
-
-const gfm = require("remark-gfm")
+import YAML from "yaml"
+import gfm from "remark-gfm"
 
 const ScrapTabs = styled(Pivot)`
   display: flex;

@@ -1,8 +1,8 @@
-import { Canvas, Meta, Story } from "@storybook/addon-docs/blocks"
-import { ApplicationBar } from "./ApplicationBar"
-import { SFlex } from "../layouts"
+import {Canvas, Meta, Story} from "@storybook/addon-docs/blocks"
+import {ApplicationBar} from "./ApplicationBar"
+import {SFlex} from "../layouts"
 
-<Meta title="ApplicationBar" component={ApplicationBar} />
+<Meta title="ApplicationBar" component={ApplicationBar}/>
 
 # Action Bar
 
@@ -13,7 +13,7 @@ From here users can navigate back to the main menu using the waffle
 <Canvas>
   <Story name="Composition">
     <SFlex>
-      <ApplicationBar name={"Scrappy"} onExit={() => alert(`Lets Exit`)} />
+      <ApplicationBar name={"Scrappy"} onExit={() => alert(`Lets Exit`)}/>
     </SFlex>
   </Story>
 </Canvas>
