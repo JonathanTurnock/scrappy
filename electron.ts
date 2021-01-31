@@ -1,10 +1,12 @@
-import { app, protocol } from "electron"
+import { app, BrowserWindow, protocol } from "electron"
 import { resolve } from "path"
 import { info } from "electron-log"
 import { createWindow } from "./main/create-window"
 import appProtocol from "./main/app.protocol"
 
 info("Logging Directory", resolve(app.getPath("logs")))
+
+let win: BrowserWindow
 
 protocol.registerSchemesAsPrivileged([
   {
@@ -15,7 +17,7 @@ protocol.registerSchemesAsPrivileged([
 
 app.on("ready", () => {
   protocol.registerFileProtocol("app", appProtocol(resolve(__dirname)))
-  createWindow()
+  win = createWindow()
 })
 
 app.on("window-all-closed", () => {
@@ -31,7 +33,7 @@ app.on("web-contents-created", (event, contents) => {
 })
 
 app.on("activate", () => {
-  if (window === null) {
+  if (win === null) {
     createWindow()
   }
 })

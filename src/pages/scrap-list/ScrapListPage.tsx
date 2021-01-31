@@ -13,7 +13,7 @@ import {
 } from "@fluentui/react"
 import { useHistory } from "react-router-dom"
 import { useBoolean } from "@fluentui/react-hooks"
-import { ActionBarContainer, ActionBarItem, fdConfirm, fdInput, SFlex } from "../../@ui-components"
+import { ActionBarContainer, ActionBarItem, fdConfirm, fdInput, SFlex } from "../../@ui-kit"
 import { useAllScrapsSubscription, useScrapOperations } from "../../database"
 import { getShortId } from "../../utils/getShortId"
 import { ScrapEntity } from "../../types"

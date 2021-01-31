@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import { Database } from "./Database"
 import { DatabaseError } from "./components"
 import { DatabaseContext } from "./DatabaseContext"
-import { SLoadingScreen } from "../@ui-components/layouts/SLoadingScreen"
+import { LoadingScreen } from "../@ui-kit/utilities/LoadingScreen"
 import { RxCollectionCreatorBase } from "rxdb/dist/types/types"
 
 export const DatabaseProvider: React.FC<{
@@ -39,7 +39,7 @@ export const DatabaseProvider: React.FC<{
     }
 
     if (!db && !error) {
-      return <SLoadingScreen />
+      return <LoadingScreen />
     }
 
     return <></>

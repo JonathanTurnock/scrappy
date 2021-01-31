@@ -1,0 +1,43 @@
+import { Stack } from "@fluentui/react"
+import { EditorBox } from "./EditorBox"
+import { Canvas, Meta, Story } from "@storybook/addon-docs/blocks"
+
+<Meta
+  title="Components/Editor"
+  component={EditorBox}
+  argTypes={{
+    language: {
+      name: "Language",
+      defaultValue: "markdown",
+      description: "Which Language Type to use",
+      control: {
+        type: "select",
+        options: ["markdown", "json", "yaml"],
+      },
+    },
+  }}
+/>
+
+# Loading Screen
+
+Monaco Editor Window
+
+export const Template = (args) => (
+  <Stack style={{ height: "500px" }}>
+    <EditorBox {...args} />
+  </Stack>
+)
+
+<Canvas>
+  <Story
+    name="EditorBox"
+    args={{
+      language: "markdown",
+      defaultValue: "# Hello World",
+      onLanguageChange: console.log,
+      onChanges: console.log,
+    }}
+  >
+    {Template.bind({})}
+  </Story>
+</Canvas>

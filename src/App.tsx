@@ -1,9 +1,22 @@
-import React, { useMemo } from "react"
-import { Route, Switch, useHistory } from "react-router-dom"
-import { ScrapListPage, ScrapPage } from "./pages"
-import { INavLink, INavLinkGroup, Nav, Text } from "@fluentui/react"
+import React, { useEffect, useState } from "react"
+import { HashRouter, Route, Switch } from "react-router-dom"
+import { ThemeProvider } from "@fluentui/react-theme-provider"
 import styled from "styled-components"
-import { theme } from "./theme"
+import { ScrapListPage, ScrapPage } from "./pages"
+import { darkTheme, lightTheme } from "./theme"
+import { SideNav } from "./nav"
+import { loadTheme } from "@fluentui/react"
+import { DatabaseProvider, scrapsCollection } from "./database"
+import { RxCollectionCreatorBase } from "rxdb/dist/types/types"
+import { Provider } from "react-redux"
+import { store } from "./app/store"
+
+const DATABASE_NAME = "scrappydb"
+const SCHEMAS: Record<string, RxCollectionCreatorBase> = {
+  scraps: scrapsCollection,
+}
+
+const DATABASE_OPTS = { inMemory: false, password: undefined }
 
 const AppContainer = styled.div`
   flex: auto;
@@ -12,55 +25,49 @@ const AppContainer = styled.div`
   overflow: hidden;
 `
 
-const NavFrame = styled.div`
-  display: flex;
-  flex: auto;
-  flex-direction: column;
-  background-color: ${theme.palette.neutralLighter};
-`
-
 const Main = styled.main`
   display: flex;
   flex: auto;
   overflow: inherit;
 `
 
-type IReactRouterNavLinkGroup = Omit<INavLinkGroup, "links"> & { links: Omit<INavLink, "url">[] }
-
 const App = () => {
-  const { push } = useHistory()
-
-  const navLinkGroups: IReactRouterNavLinkGroup[] = useMemo(
-    () => [
-      {
-        links: [
-          {
-            key: "scraps",
-            name: "Scraps",
-            icon: "TextDocument",
-            onClick: () => push("/"),
-          },
-        ],
-      },
-    ],
-    []
+  const [theme, setTheme] = useState(
+    window.matchMedia("(prefers-color-scheme: dark)").matches ? darkTheme : lightTheme
   )
 
+  useEffect(() => {
+    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
+      if (e.matches) {
+        setTheme(darkTheme)
+      } else {
+        setTheme(lightTheme)
+      }
+    })
+  }, [])
+
+  useEffect(() => {
+    loadTheme(theme)
+  }, [theme])
+
   return (
-    <AppContainer>
-      <NavFrame>
-        <Text className="p-2 no-user-select" variant="xLargePlus">
-          Scrappy
-        </Text>
-        <Nav groups={navLinkGroups as INavLinkGroup[]} />
-      </NavFrame>
-      <Main>
-        <Switch>
-          <Route path="/scrap/:id" component={ScrapPage} />
-          <Route path="/" component={ScrapListPage} />
-        </Switch>
-      </Main>
-    </AppContainer>
+    <ThemeProvider theme={theme} style={{ display: "flex", flex: "auto" }}>
+      <Provider store={store}>
+        <DatabaseProvider databaseName={DATABASE_NAME} schemas={SCHEMAS} options={DATABASE_OPTS}>
+          <AppContainer>
+            <HashRouter>
+              <SideNav />
+              <Main>
+                <Switch>
+                  <Route path="/scrap/:id" component={ScrapPage} />
+                  <Route path="/" component={ScrapListPage} />
+                </Switch>
+              </Main>
+            </HashRouter>
+          </AppContainer>
+        </DatabaseProvider>
+      </Provider>
+    </ThemeProvider>
   )
 }
 
