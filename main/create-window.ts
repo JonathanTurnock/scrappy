@@ -35,8 +35,8 @@ export const createWindow = (): BrowserWindow => {
     logger.info('Loading from "http://localhost:3000"')
     window.loadURL("http://localhost:3000")
   } else {
-    logger.info(`Loading from "app://scrappy/index.html"`)
-    window.loadURL("app://scrappy/index.html")
+    logger.info(`Loading from "app://local/scrappy/index.html"`)
+    window.loadURL("app://local/scrappy/index.html")
   }
 
   if (!isDev) {

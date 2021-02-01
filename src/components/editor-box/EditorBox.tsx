@@ -31,7 +31,6 @@ export const EditorBox: React.FC<IEditorBox> = ({
   const { isInverted } = useTheme()
 
   useEffect(() => {
-    console.log("Adding Action", language)
     const action = _eRef.current?.addAction({
       id: "app-prettier-format",
       label: "Reformat with Prettier",
@@ -93,14 +92,21 @@ export const EditorBox: React.FC<IEditorBox> = ({
     <Editor
       theme={isInverted ? "vs-dark" : "vs-light"}
       options={{
-        fontSize: 16,
-        fontFamily: "Inconsolata",
-        automaticLayout: true,
-        extraEditorClassName: "editor-box",
+        fontSize: 14,
+        wordWrap: "on",
+        fontLigatures: true,
+        multiCursorModifier: "alt",
+        lineNumbers: "off",
+        minimap: {
+          enabled: false,
+        },
+        scrollBeyondLastLine: false,
+        scrollbar: {
+          verticalScrollbarSize: 6,
+          verticalSliderSize: 6,
+        },
       }}
-      wrapperClassName={"app-monaco-editor"}
       language={language}
-      height={"inherit"}
       onMount={handleEditorDidMount}
       defaultValue={defaultValue}
       onChange={(value) => {

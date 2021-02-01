@@ -1,28 +1,33 @@
 import React, { useEffect, useState } from "react"
 import { useHistory, useParams } from "react-router-dom"
-import { Breadcrumb, Dropdown, Pivot, PivotItem, Stack } from "@fluentui/react"
-import ReactMarkdown from "react-markdown"
+import { Breadcrumb, Pivot, PivotItem, Stack } from "@fluentui/react"
 import styled from "styled-components"
-import YAML from "yaml"
-import gfm from "remark-gfm"
 import { useScrapOperations, useScrapSubscription } from "../../database"
-import { ActionBarContainer, ActionBarItem, fdAlert, SFlex } from "../../@ui-kit"
-import { EditorBox } from "../../components"
+import { fdAlert } from "../../@ui-kit"
+import { ActionBar } from "./components/ActionBar"
+import { MarkdownView } from "./components/MarkdownView"
+import { ObjectView } from "./components/ObjectView"
+import { EditView } from "./components/EditView"
 
 const ScrapTabs = styled(Pivot)`
   display: flex;
   flex-direction: column;
   flex: auto;
+  overflow: hidden;
 
   & > div[role="tabpanel"] {
     display: flex;
     flex: auto;
+    overflow-y: scroll;
+    overflow-x: hidden;
   }
 
   & > div[role="tabpanel"] > .scrap-tab {
     display: flex;
     flex: auto;
     flex-direction: column;
+    padding: 0.5rem;
+    overflow-x: hidden;
   }
 `
 
@@ -50,46 +55,18 @@ export const ScrapPage: React.FC = () => {
     }
   }, [scrap, error])
 
-  // const scrap = useScrapSubscription(location.id)
-
   const handleSave = async () => {
     if (scrap && liveContent && contentType) {
       await save({ ...scrap, content: liveContent, contentType })
     }
   }
 
-  const getMarkdown = (): string => {
-    if (liveContent) {
-      switch (contentType) {
-        case "markdown":
-          console.log("Parsing Markdown")
-          return liveContent
-        case "json":
-          console.log("Parsing JSON")
-          return "```json\n" + liveContent + "\n```"
-        case "yaml":
-          console.log("Parsing YAML")
-          return "```json\n" + YAML.parse(liveContent) + "\n```"
-        default:
-          return ""
-      }
-    }
-    return ""
-  }
-
   return (
-    <SFlex style={{ flexDirection: "column" }}>
+    <Stack style={{ flex: "auto", overflow: "hidden" }}>
       {scrap && contentType && (
         <>
-          <ActionBarContainer>
-            <ActionBarItem icon="Save" name="Save" onClick={handleSave} />
-            <ActionBarItem
-              icon="OpenPane"
-              name="Details"
-              onClick={() => alert("Not Implemented")}
-            />
-          </ActionBarContainer>
-          <Stack className="container flex-fill">
+          <ActionBar onSave={handleSave} />
+          <Stack style={{ overflow: "hidden" }} className="container flex-fill">
             <Breadcrumb
               items={[
                 { key: "scraps", text: "Scraps", onClick: () => push("/scraps") },
@@ -97,38 +74,23 @@ export const ScrapPage: React.FC = () => {
               ]}
             />
             <ScrapTabs>
-              <PivotItem headerText="View" itemIcon="TextDocument">
-                <SFlex className="container px-2 flex-column text-dark">
-                  <ReactMarkdown plugins={[gfm]} children={getMarkdown()} />
-                </SFlex>
+              <PivotItem className="scrap-tab" headerText="View" itemIcon="TextDocument">
+                {(contentType === "markdown" && (
+                  <MarkdownView contentType={contentType} content={liveContent || ""} />
+                )) || <ObjectView contentType={contentType} content={liveContent || ""} />}
               </PivotItem>
               <PivotItem className="scrap-tab" headerText="Edit" itemIcon="FileCode">
-                <SFlex>
-                  <EditorBox
-                    language={contentType}
-                    onLanguageChange={setContentType}
-                    defaultValue={liveContent || ""}
-                    onChanges={setLiveContent}
-                  />
-                </SFlex>
-                <Stack horizontal className="p-2 justify-content-end">
-                  <Dropdown
-                    options={[
-                      { key: "markdown", text: "Markdown" },
-                      { key: "json", text: "JSON" },
-                      { key: "yaml", text: "YAML" },
-                    ]}
-                    selectedKey={contentType}
-                    onChange={(event, option) =>
-                      option?.key && setContentType(option.key.toString())
-                    }
-                  />
-                </Stack>
+                <EditView
+                  language={contentType}
+                  onLanguageChange={setContentType}
+                  content={liveContent}
+                  onContentChange={setLiveContent}
+                />
               </PivotItem>
             </ScrapTabs>
           </Stack>
         </>
       )}
-    </SFlex>
+    </Stack>
   )
 }

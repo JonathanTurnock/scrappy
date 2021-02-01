@@ -1,0 +1,27 @@
+import { Canvas, Meta, Story } from "@storybook/addon-docs/blocks"
+import { Stack } from "@fluentui/react"
+import { MarkdownView } from "./MarkdownView"
+const { stub } = require("./__stubs__/stub.mdx")
+
+<Meta title="Pages/Scrap/components" component={MarkdownView} />
+
+# Markdown View
+
+Scrap Action Bar
+
+export const Template = ({ content }) => (
+  <Stack style={{ height: "500px" }}>
+    <MarkdownView contentType={"markdown"} content={content} />
+  </Stack>
+)
+
+<Canvas>
+  <Story
+    name="MarkdownView"
+    args={{
+      content: stub,
+    }}
+  >
+    {Template.bind({})}
+  </Story>
+</Canvas>

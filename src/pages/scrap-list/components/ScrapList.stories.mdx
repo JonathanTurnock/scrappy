@@ -1,0 +1,57 @@
+import { Canvas, Meta, Story } from "@storybook/addon-docs/blocks"
+import { Stack } from "@fluentui/react"
+import { ScrapList } from "./ScrapList"
+
+<Meta title="Pages/ScrapList/components" component={ScrapList} />
+
+# Scrap List
+
+Scrap List for the Scrap List Page
+
+export const Template = (args) => (
+  <Stack style={{ height: "500px" }}>
+    <ScrapList {...args} />
+  </Stack>
+)
+
+<Canvas>
+  <Story
+    name="ScrapList"
+    args={{
+      scraps: [
+        {
+          id: "one",
+          created: new Date().getTime(),
+          name: "My Markdown Scrap",
+          starred: false,
+          locked: false,
+          contentType: "markdown",
+          content: "",
+        },
+        {
+          id: "two",
+          created: new Date().getTime(),
+          name: "My Locked YAML Scrap",
+          starred: false,
+          locked: true,
+          contentType: "yaml",
+          content: "",
+        },
+        {
+          id: "three",
+          created: new Date().getTime(),
+          name: "My Favourite JSON Scrap",
+          starred: true,
+          locked: false,
+          contentType: "json",
+          content: "",
+        },
+      ],
+      onOpen: () => alert("Open"),
+      onSelectionChange: () => alert("Selection Changed"),
+      selectionEnabled: false,
+    }}
+  >
+    {Template.bind({})}
+  </Story>
+</Canvas>

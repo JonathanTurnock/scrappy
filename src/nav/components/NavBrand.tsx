@@ -1,6 +1,7 @@
 import React from "react"
 import { Stack, Text } from "@fluentui/react"
 import styled from "styled-components"
+import brandLogo from "../../resources/brand-logo.png"
 
 const BrandImage = styled.img`
   height: 32px;
@@ -25,7 +26,7 @@ export type INavBrand = {}
 export const NavBrand: React.FC<INavBrand> = ({}) => {
   return (
     <BrandStack horizontal>
-      <BrandImage src={"/favicon.512x512.png"} alt={"brand-logo"} />
+      <BrandImage src={brandLogo} alt={"brand-logo"} />
       <BrandName>Scrappy</BrandName>
     </BrandStack>
   )

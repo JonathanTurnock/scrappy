@@ -1,0 +1,21 @@
+import { Canvas, Meta, Story } from "@storybook/addon-docs/blocks"
+import { Stack } from "@fluentui/react"
+import { ActionBar } from "./ActionBar"
+
+<Meta title="Pages/Scrap/components" component={ActionBar} />
+
+# Action Bar
+
+Scrap Action Bar
+
+export const Template = ({}) => (
+  <Stack style={{ height: "500px" }}>
+    <ActionBar onSave={() => alert("Save!")} onDetails={() => alert("Details!")} />
+  </Stack>
+)
+
+<Canvas>
+  <Story name="ActionBar" args={{}}>
+    {Template.bind({})}
+  </Story>
+</Canvas>

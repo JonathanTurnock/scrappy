@@ -2,8 +2,9 @@ import { darkTheme, lightTheme } from "../src/theme"
 import { ThemeProvider } from "@fluentui/react-theme-provider"
 import { useEffect } from "react"
 import { initializeIcons, loadTheme } from "@fluentui/react"
+import "../src/index.scss"
 
-initializeIcons("static/media/")
+initializeIcons()
 
 export const parameters = {
   actions: { argTypesRegex: "^on[A-Z].*" },

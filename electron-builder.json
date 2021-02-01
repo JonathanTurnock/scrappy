@@ -14,12 +14,21 @@
   ],
   "extraFiles": [],
   "win": {
-    "icon": "build/"
+    "icon": "build/",
+    "target": [
+      "portable"
+    ]
   },
   "mac": {
-    "icon": "build/"
+    "icon": "build/",
+    "target": [
+      "dmg"
+    ]
   },
   "linux": {
-    "icon": "build/"
+    "icon": "build/",
+    "target": [
+      "AppImage"
+    ]
   }
 }

@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react"
 import { HashRouter, Route, Switch } from "react-router-dom"
 import { ThemeProvider } from "@fluentui/react-theme-provider"
 import styled from "styled-components"
+import { useBoolean } from "@fluentui/react-hooks"
 import { ScrapListPage, ScrapPage } from "./pages"
-import { darkTheme, lightTheme } from "./theme"
 import { SideNav } from "./nav"
-import { loadTheme } from "@fluentui/react"
+import { darkTheme, lightTheme } from "./theme"
+import { IconButton, loadTheme } from "@fluentui/react"
 import { DatabaseProvider, scrapsCollection } from "./database"
 import { RxCollectionCreatorBase } from "rxdb/dist/types/types"
 import { Provider } from "react-redux"
@@ -20,8 +21,7 @@ const DATABASE_OPTS = { inMemory: false, password: undefined }
 
 const AppContainer = styled.div`
   flex: auto;
-  display: grid;
-  grid-template-columns: 200px auto;
+  display: flex;
   overflow: hidden;
 `
 
@@ -32,6 +32,7 @@ const Main = styled.main`
 `
 
 const App = () => {
+  const [isOpen, { setTrue: openPanel, setFalse: dismissPanel }] = useBoolean(false)
   const [theme, setTheme] = useState(
     window.matchMedia("(prefers-color-scheme: dark)").matches ? darkTheme : lightTheme
   )
@@ -54,17 +55,22 @@ const App = () => {
     <ThemeProvider theme={theme} style={{ display: "flex", flex: "auto" }}>
       <Provider store={store}>
         <DatabaseProvider databaseName={DATABASE_NAME} schemas={SCHEMAS} options={DATABASE_OPTS}>
-          <AppContainer>
-            <HashRouter>
-              <SideNav />
+          <HashRouter>
+            <AppContainer>
+              <SideNav isOpen={isOpen} onDismiss={dismissPanel} />
               <Main>
                 <Switch>
                   <Route path="/scrap/:id" component={ScrapPage} />
                   <Route path="/" component={ScrapListPage} />
                 </Switch>
               </Main>
-            </HashRouter>
-          </AppContainer>
+            </AppContainer>
+          </HashRouter>
+          <IconButton
+            onClick={openPanel}
+            iconProps={{ iconName: "CollapseMenu" }}
+            style={{ position: "fixed", bottom: "2rem", left: "2rem" }}
+          />
         </DatabaseProvider>
       </Provider>
     </ThemeProvider>

@@ -1,6 +1,7 @@
 @import "~highlight.js/styles/atom-one-dark.css";
 @import "bootstrap";
 @import "~typeface-rock-salt";
+@import "~github-markdown-css/github-markdown.css";
 
 ::-webkit-scrollbar {
   width: 4px;
@@ -14,6 +15,7 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  overflow: hidden;
 }
 
 pre {

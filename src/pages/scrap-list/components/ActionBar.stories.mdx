@@ -1,0 +1,52 @@
+import { Canvas, Meta, Story } from "@storybook/addon-docs/blocks"
+import { Stack } from "@fluentui/react"
+import { MobileActionBar } from "./MobileActionBar"
+import { DesktopActionBar } from "./DesktopActionBar"
+
+<Meta title="Pages/ScrapList/components" component={DesktopActionBar} />
+
+# Desktop Action Bar
+
+Desktop Action Bar for the Scrap List
+
+export const DesktopTemplate = ({ selectionCount }) => (
+  <Stack style={{ height: "500px" }}>
+    <DesktopActionBar
+      selectionCount={selectionCount}
+      onAdd={() => alert("Add Clicked")}
+      onRename={() => alert("Rename Clicked")}
+      onDelete={() => alert("Delete Clicked")}
+      onToggleSelection={() => alert("Selection Mode Changed")}
+      onFilter={(filterText) => alert(`Filter By ${filterText}`)}
+    />
+  </Stack>
+)
+
+<Canvas>
+  <Story name="DesktopActionBar" args={{ selectionCount: 1 }}>
+    {DesktopTemplate.bind({})}
+  </Story>
+</Canvas>
+
+# Mobile Action Bar
+
+Mobile Action Bar for the Scrap List
+
+export const MobileTemplate = ({ selectionCount }) => (
+  <Stack style={{ height: "500px" }}>
+    <MobileActionBar
+      selectionCount={selectionCount}
+      onAdd={() => alert("Add Clicked")}
+      onRename={() => alert("Rename Clicked")}
+      onDelete={() => alert("Delete Clicked")}
+      onToggleSelection={() => alert("Selection Mode Changed")}
+      onFilter={(filterText) => alert(`Filter By ${filterText}`)}
+    />
+  </Stack>
+)
+
+<Canvas>
+  <Story name="MobileActionBar" args={{ selectionCount: 1 }}>
+    {MobileTemplate.bind({})}
+  </Story>
+</Canvas>

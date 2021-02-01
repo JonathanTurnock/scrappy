@@ -12,5 +12,5 @@ export type ISideNavPanel = {}
 export const SideNavPanel: React.FC<ISideNavPanel> = ({ children }) => {
   const { palette } = useTheme()
 
-  return <Panel style={{ backgroundColor: palette.neutralLighter }}>{children}</Panel>
+  return <Panel>{children}</Panel>
 }

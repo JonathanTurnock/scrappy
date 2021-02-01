@@ -9,7 +9,7 @@ export default (serveFrom) => (req, callback) => {
   const reqUrl = new URL(req.url)
   console.log(reqUrl)
   logger.debug(`Serving Request for APP Resource: ${reqUrl}`)
-  const absPath = join(serveFrom, normalize(reqUrl.pathname))
+  const absPath = join(serveFrom, normalize(reqUrl.pathname.replace("/scrappy", "")))
   logger.info(`Resolved App Resource to: ${absPath}`)
   if (isPathInside(absPath, serveFrom) && existsSync(absPath)) {
     return callback({ path: absPath })

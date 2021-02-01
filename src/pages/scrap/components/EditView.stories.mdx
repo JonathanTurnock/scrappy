@@ -1,0 +1,46 @@
+import { Stack } from "@fluentui/react"
+import { Canvas, Meta, Story } from "@storybook/addon-docs/blocks"
+import { EditView } from "./EditView"
+import { stub } from "./__stubs__/stub.mdx"
+
+<Meta title="Pages/Scrap/components" component={EditView} />
+
+# Edit View
+
+Editor View
+
+export const Template = ({ content, language }) => (
+  <Stack
+    style={{ height: "500px" }}
+    argTypes={{
+      language: {
+        name: "Language",
+        defaultValue: "markdown",
+        description: "Which Language Type to use",
+        control: {
+          type: "select",
+          options: ["markdown", "json", "yaml"],
+        },
+      },
+    }}
+  >
+    <EditView
+      content={content}
+      language={language}
+      onContentChange={console.log}
+      onLanguageChange={alert}
+    />
+  </Stack>
+)
+
+<Canvas>
+  <Story
+    name="EditView"
+    args={{
+      language: "markdown",
+      content: stub,
+    }}
+  >
+    {Template.bind({})}
+  </Story>
+</Canvas>
