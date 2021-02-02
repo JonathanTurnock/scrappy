@@ -1,10 +1,8 @@
 name: deploy
 
 on:
-  pull_request:
-    branches: [ master ]
-  push:
-    branches: [ master ]
+  release:
+    types: [ created ]
 
 jobs:
   gh-release:
@@ -34,7 +32,7 @@ jobs:
           GIT_USER: git
           DEPLOYMENT_BRANCH: gh-pages
         run: |
-          git remote set-url origin git@github.com:flying-dice/wing-patrol-campaign-editor.git
+          git remote set-url origin git@github.com:JonathanTurnock/scrappy.git
           git config --global user.email "actions@gihub.com"
           git config --global user.name "gh-actions"
           yarn install --frozen-lockfile
