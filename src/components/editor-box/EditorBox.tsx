@@ -93,7 +93,7 @@ export const EditorBox: React.FC<IEditorBox> = ({
       theme={isInverted ? "vs-dark" : "vs-light"}
       options={{
         fontSize: 14,
-        wordWrap: "on",
+        wordWrap: "off",
         fontLigatures: true,
         multiCursorModifier: "alt",
         lineNumbers: "off",

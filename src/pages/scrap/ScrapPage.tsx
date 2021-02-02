@@ -8,6 +8,8 @@ import { ActionBar } from "./components/ActionBar"
 import { MarkdownView } from "./components/MarkdownView"
 import { ObjectView } from "./components/ObjectView"
 import { EditView } from "./components/EditView"
+import { Labels } from "./components/Labels"
+import { Title } from "./components/Title"
 
 const ScrapTabs = styled(Pivot)`
   display: flex;
@@ -36,13 +38,17 @@ export const ScrapPage: React.FC = () => {
   const { id } = useParams()
   const [scrap, { error }] = useScrapSubscription({ id })
   const { save } = useScrapOperations()
+  const [liveTitle, setLiveTitle] = useState(scrap?.name)
   const [liveContent, setLiveContent] = useState(scrap?.content)
   const [contentType, setContentType] = useState(scrap?.contentType)
+  const [labels, setLabels] = useState(scrap?.labels || [])
 
   useEffect(() => {
     if (scrap) {
+      setLiveTitle(scrap.name)
       setLiveContent(scrap.content)
       setContentType(scrap.contentType)
+      setLabels(scrap.labels)
     }
   }, [scrap])
 
@@ -56,8 +62,18 @@ export const ScrapPage: React.FC = () => {
   }, [scrap, error])
 
   const handleSave = async () => {
-    if (scrap && liveContent && contentType) {
-      await save({ ...scrap, content: liveContent, contentType })
+    if (scrap && liveTitle && contentType) {
+      save({
+        ...scrap,
+        name: liveTitle,
+        content: liveContent || "",
+        contentType,
+        labels: labels,
+      }).catch((e) => {
+        fdAlert({ title: "Failed to Save", text: e.message })
+      })
+    } else {
+      fdAlert({ title: "Failed to Save", text: "No Content Type Defined" })
     }
   }
 
@@ -73,6 +89,10 @@ export const ScrapPage: React.FC = () => {
                 { key: "scrap", text: scrap.name },
               ]}
             />
+            <Stack style={{ paddingTop: "1rem" }} tokens={{ childrenGap: "0.5rem" }}>
+              <Title value={liveTitle || ""} onChange={setLiveTitle} />
+              <Labels onChange={setLabels} labels={labels} />
+            </Stack>
             <ScrapTabs>
               <PivotItem className="scrap-tab" headerText="View" itemIcon="TextDocument">
                 {(contentType === "markdown" && (

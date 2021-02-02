@@ -8,6 +8,9 @@ export const toScrapEntity = ({
   locked,
   content,
   contentType,
+  archived,
+  groupName,
+  labels,
 }: any): ScrapEntity => ({
   id,
   created,
@@ -16,4 +19,7 @@ export const toScrapEntity = ({
   locked,
   content,
   contentType,
+  archived,
+  groupName,
+  labels,
 })

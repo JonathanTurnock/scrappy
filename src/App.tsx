@@ -11,6 +11,7 @@ import { DatabaseProvider, scrapsCollection } from "./database"
 import { RxCollectionCreatorBase } from "rxdb/dist/types/types"
 import { Provider } from "react-redux"
 import { store } from "./app/store"
+import { useMediaQuery } from "react-responsive"
 
 const DATABASE_NAME = "scrappydb"
 const SCHEMAS: Record<string, RxCollectionCreatorBase> = {
@@ -33,45 +34,44 @@ const Main = styled.main`
 
 const App = () => {
   const [isOpen, { setTrue: openPanel, setFalse: dismissPanel }] = useBoolean(false)
-  const [theme, setTheme] = useState(
-    window.matchMedia("(prefers-color-scheme: dark)").matches ? darkTheme : lightTheme
-  )
+  const prefersDark = useMediaQuery({ query: "(prefers-color-scheme: dark)" })
+  const [theme, setTheme] = useState(prefersDark ? darkTheme : lightTheme)
 
   useEffect(() => {
-    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
-      if (e.matches) {
-        setTheme(darkTheme)
-      } else {
-        setTheme(lightTheme)
-      }
-    })
-  }, [])
-
-  useEffect(() => {
-    loadTheme(theme)
-  }, [theme])
+    if (prefersDark) {
+      setTheme(darkTheme)
+      loadTheme(darkTheme)
+    } else {
+      setTheme(lightTheme)
+      loadTheme(lightTheme)
+    }
+  }, [prefersDark])
 
   return (
     <ThemeProvider theme={theme} style={{ display: "flex", flex: "auto" }}>
       <Provider store={store}>
-        <DatabaseProvider databaseName={DATABASE_NAME} schemas={SCHEMAS} options={DATABASE_OPTS}>
-          <HashRouter>
-            <AppContainer>
-              <SideNav isOpen={isOpen} onDismiss={dismissPanel} />
-              <Main>
+        <HashRouter>
+          <AppContainer>
+            <SideNav isOpen={isOpen} onDismiss={dismissPanel} />
+            <Main>
+              <DatabaseProvider
+                databaseName={DATABASE_NAME}
+                schemas={SCHEMAS}
+                options={DATABASE_OPTS}
+              >
                 <Switch>
                   <Route path="/scrap/:id" component={ScrapPage} />
                   <Route path="/" component={ScrapListPage} />
                 </Switch>
-              </Main>
-            </AppContainer>
-          </HashRouter>
-          <IconButton
-            onClick={openPanel}
-            iconProps={{ iconName: "CollapseMenu" }}
-            style={{ position: "fixed", bottom: "2rem", left: "2rem" }}
-          />
-        </DatabaseProvider>
+              </DatabaseProvider>
+            </Main>
+          </AppContainer>
+        </HashRouter>
+        <IconButton
+          onClick={openPanel}
+          iconProps={{ iconName: "CollapseMenu" }}
+          style={{ position: "fixed", bottom: "2rem", left: "2rem" }}
+        />
       </Provider>
     </ThemeProvider>
   )

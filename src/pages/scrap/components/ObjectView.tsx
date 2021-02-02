@@ -1,6 +1,8 @@
 import React, { useMemo } from "react"
 import {
   DirectionalHint,
+  IconButton,
+  Label,
   Separator,
   Stack,
   Text,
@@ -9,11 +11,11 @@ import {
   TooltipHost,
 } from "@fluentui/react"
 import YAML from "yaml"
-import { isObject, map } from "lodash"
-import { write as copyToClipboard } from "clipboardy"
+import { clamp, isObject, map } from "lodash"
 import { capitalCase } from "change-case"
 import { Language } from "../../../types"
 import { ErrorBoundary } from "./ErrorBoundary"
+import { write as copyToClipboard } from "clipboardy"
 
 const getVariant = (depth: number) => {
   switch (depth) {
@@ -32,14 +34,14 @@ export type IObjectField = { title: string; object: any; depth: number }
 export const ObjectField: React.FC<IObjectField> = ({ title, object, depth }) => {
   const mapValue = (key: string, value: any) => {
     if (isObject(value)) {
-      return <ObjectField title={key} object={value} depth={depth + 1} />
+      return <ObjectField key={key} title={key} object={value} depth={depth + 1} />
     } else {
       return <KeyValueField key={key} k={key} v={value} />
     }
   }
 
   return (
-    <Stack style={{ paddingLeft: `${depth * 10}px`, paddingTop: "0.5rem" }}>
+    <Stack style={{ paddingTop: "0.5rem" }}>
       <Text variant={getVariant(depth)}>{capitalCase(title)}</Text>
       <Separator />
       <Stack tokens={{ childrenGap: "0.5rem" }}>{map(object, (v, k) => mapValue(k, v))}</Stack>
@@ -52,11 +54,34 @@ export type IKeyValueField = {
   v: string | number | boolean
 }
 const KeyValueField: React.FC<IKeyValueField> = ({ k, v }) => {
-  let label
+  let label: string
   try {
     label = k && capitalCase(k)
   } catch (e) {
     label = ""
+  }
+
+  const type = useMemo(() => {
+    if (k.match(/(^pass|pass$)/)) {
+      return "password"
+    }
+    return undefined
+  }, [k])
+
+  const onRenderLabel = (): JSX.Element => {
+    return (
+      <Stack horizontal tokens={{ childrenGap: "0.5rem" }}>
+        <Label>{label}</Label>
+        <TooltipHost content={"Copy to Clipboard"} directionalHint={DirectionalHint.bottomCenter}>
+          <IconButton
+            iconProps={{ iconName: "Copy" }}
+            onClick={() => {
+              copyToClipboard(v.toString())
+            }}
+          />
+        </TooltipHost>
+      </Stack>
+    )
   }
 
   switch (typeof v) {
@@ -64,16 +89,15 @@ const KeyValueField: React.FC<IKeyValueField> = ({ k, v }) => {
       return <Toggle label={label} checked={v} />
     default:
       return (
-        <TooltipHost content={"Copy to Clipboard"} directionalHint={DirectionalHint.bottomCenter}>
-          <TextField
-            readOnly
-            multiline={v.toString().includes("\n")}
-            label={label}
-            value={v.toString()}
-            style={{ cursor: "pointer" }}
-            onClick={() => copyToClipboard(v.toString())}
-          />
-        </TooltipHost>
+        <TextField
+          readOnly
+          canRevealPassword
+          type={type}
+          multiline={v.toString().includes("\n")}
+          rows={clamp(v.toString().split("\n").length, 0, 10)}
+          value={v.toString()}
+          onRenderLabel={() => onRenderLabel()}
+        />
       )
   }
 }
@@ -96,7 +120,7 @@ export const ObjectView: React.FC<IObjectView> = ({ contentType, content }) => {
 
   const mapValue = (key: string, value: any) => {
     if (isObject(value)) {
-      return <ObjectField title={key} object={value} depth={1} />
+      return <ObjectField key={key} title={key} object={value} depth={1} />
     } else {
       return <KeyValueField key={key} k={key} v={value} />
     }

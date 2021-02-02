@@ -1,5 +1,5 @@
 import React, { useMemo } from "react"
-import { DetailsList, Selection, SelectionMode } from "@fluentui/react"
+import { DetailsList, Selection, SelectionMode, Stack } from "@fluentui/react"
 import { ScrapEntity } from "../../../types"
 import { columns } from "./ScrapList.columns"
 
@@ -25,14 +25,16 @@ export const ScrapList: React.FC<IScrapList> = ({
   }, [])
 
   return (
-    <DetailsList
-      // @ts-ignore
-      selection={selection}
-      items={scraps}
-      columns={columns}
-      onItemInvoked={onOpen}
-      selectionMode={selectionEnabled ? SelectionMode.multiple : SelectionMode.none}
-      styles={{ root: { userSelect: "none" } }}
-    />
+    <Stack style={{ overflowY: "auto" }}>
+      <DetailsList
+        // @ts-ignore
+        selection={selection}
+        items={scraps}
+        columns={columns}
+        onItemInvoked={onOpen}
+        selectionMode={selectionEnabled ? SelectionMode.multiple : SelectionMode.none}
+        styles={{ root: { userSelect: "none" } }}
+      />
+    </Stack>
   )
 }

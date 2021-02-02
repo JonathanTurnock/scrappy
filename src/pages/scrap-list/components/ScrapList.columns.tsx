@@ -62,6 +62,14 @@ export const columns: IColumn[] = [
   },
   { key: "name", name: "Name", minWidth: 16, fieldName: "name" },
   {
+    key: "labels",
+    name: "Labels",
+    minWidth: 100,
+    maxWidth: 100,
+    fieldName: "labels",
+    onRender: ({ labels }: { labels: string[] }) => labels.join(", "),
+  },
+  {
     key: "created",
     name: "Created",
     minWidth: 120,

@@ -8,6 +8,8 @@ export const MobileActionBar: React.FC<IActionBar> = ({
   onRename,
   onDelete,
   onToggleSelection,
+  onExport,
+  onImport,
   onFilter,
   selectionCount,
 }) => {
@@ -32,6 +34,14 @@ export const MobileActionBar: React.FC<IActionBar> = ({
           />
         )}
         <ActionBarItem icon="MultiSelect" name="Select" onClick={onToggleSelection} />
+        <ActionBarItem icon="Upload" name="Import" onClick={onImport} />
+        {selectionCount > 0 && (
+          <ActionBarItem
+            icon="Download"
+            name={selectionCount > 1 ? "Export All" : "Export"}
+            onClick={onExport}
+          />
+        )}
       </Stack>
     </ActionBarContainer>
   )

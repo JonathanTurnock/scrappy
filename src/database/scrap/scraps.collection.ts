@@ -12,14 +12,27 @@ export const scrapsCollection = {
       created: {
         type: "number",
       },
+      groupName: {
+        type: "string",
+      },
       name: {
         type: "string",
+        default: "Unnamed Scrap...",
+      },
+      labels: {
+        type: "array",
+        uniqueItems: true,
+        items: {
+          type: "string",
+        },
       },
       contentType: {
         type: "string",
+        default: "markdown",
       },
       content: {
         type: "string",
+        default: "New Scrap...",
       },
       starred: {
         type: "boolean",
@@ -29,9 +42,16 @@ export const scrapsCollection = {
         type: "boolean",
         default: false,
       },
+      archived: {
+        type: "boolean",
+        default: false,
+      },
     },
-    required: ["id", "created"],
+    required: ["id", "created", "name"],
     indexes: ["id", "created", "name"],
-    // encrypted: ["name", "content"],
+    encrypted: ["name", "content"],
+    attachments: {
+      encrypted: true,
+    },
   },
 }

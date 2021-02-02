@@ -1,12 +1,21 @@
 import { useCollection } from "../hooks"
 import { ScrapEntity } from "../../types"
+import { RxDocument } from "rxdb"
 
 export const useScrapOperations = (): {
+  bulkInsert: (scraps: ScrapEntity[]) => Promise<{ success: RxDocument<any, {}>[]; error: any[] }>
   save: (scrap: ScrapEntity) => Promise<ScrapEntity>
   deleteOne: (scrap: ScrapEntity) => Promise<void>
   deleteMany: (scraps: ScrapEntity[]) => Promise<void>
 } => {
   const collection = useCollection<ScrapEntity | any>("scraps")
+
+  const bulkInsert = async (
+    scraps: ScrapEntity[]
+  ): Promise<{ success: RxDocument<any, {}>[]; error: any[] }> => {
+    await deleteMany(scraps)
+    return await collection.bulkInsert(scraps)
+  }
 
   const save = async (scrap: ScrapEntity): Promise<ScrapEntity> => {
     return await collection.upsert(scrap)
@@ -25,6 +34,7 @@ export const useScrapOperations = (): {
 
   return {
     save,
+    bulkInsert,
     deleteOne,
     deleteMany,
   }
