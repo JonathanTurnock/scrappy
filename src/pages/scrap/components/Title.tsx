@@ -7,11 +7,6 @@ export type ITitle = {
 }
 export const Title: React.FC<ITitle> = ({ value, onChange }) => {
   return (
-    <TextField
-      underlined
-      onChange={({ target }: any) => onChange(target.value)}
-      value={value}
-      styles={{ field: { fontSize: "24px" } }}
-    />
+    <TextField label="Title" onChange={({ target }: any) => onChange(target.value)} value={value} />
   )
 }

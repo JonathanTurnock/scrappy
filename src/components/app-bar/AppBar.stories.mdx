@@ -1,0 +1,23 @@
+import { Stack } from "@fluentui/react"
+import { Canvas, Meta, Story } from "@storybook/addon-docs/blocks"
+import { AppBar } from "./AppBar"
+
+<Meta title="Components/AppBar" component={AppBar} />
+
+# App Bar
+
+Application Top bar
+
+<Canvas>
+  <Story name="AppBar">
+    <Stack style={{ height: "48px" }}>
+      <AppBar
+        onBurger={() => alert("Burger Clicked")}
+        onToggleLock={() => alert("Lock Clicked")}
+        onToggleTheme={() => alert("Theme Toggled")}
+        theme={"system"}
+        unlocked
+      />
+    </Stack>
+  </Story>
+</Canvas>

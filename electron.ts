@@ -20,9 +20,9 @@ app.on("ready", () => {
   win = createWindow()
 })
 
-app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
-    app.quit()
+app.on("activate", () => {
+  if (win === null) {
+    win = createWindow()
   }
 })
 
@@ -30,10 +30,4 @@ app.on("web-contents-created", (event, contents) => {
   contents.on("will-navigate", (event) => {
     event.preventDefault()
   })
-})
-
-app.on("activate", () => {
-  if (win === null) {
-    createWindow()
-  }
 })

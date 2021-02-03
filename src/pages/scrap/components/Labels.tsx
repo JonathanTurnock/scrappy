@@ -9,12 +9,14 @@ export type ILabels = {
   onChange: (labels: string[]) => void
   labels?: string[]
   availableLabels?: string[]
+  noLabel?: boolean
 }
-export const Labels: React.FC<ILabels> = ({ onChange, labels, availableLabels = [] }) => {
+export const Labels: React.FC<ILabels> = ({ noLabel, onChange, labels, availableLabels = [] }) => {
   return (
-    <Stack style={{ padding: "0.5rem" }}>
-      <Label>Labels</Label>
+    <Stack>
+      {!noLabel && <Label>Labels</Label>}
       <TagPicker
+        styles={{ text: { border: "none" } }}
         selectedItems={labels?.map((label) => ({ key: label, name: label }))}
         pickerSuggestionsProps={pickerSuggestionsProps}
         onResolveSuggestions={(filter) => {

@@ -8,12 +8,14 @@ import yaml from "prettier/parser-yaml"
 import babel from "prettier/parser-babel"
 import YAML from "yaml"
 import { useTheme } from "@fluentui/react-theme-provider"
+import { useSubject } from "../../@react-hooks"
 
 export type IEditorBox = {
   language: string
   defaultValue: string
   onLanguageChange: (newLanguage: string) => void
   onChanges?: (content: string) => void
+  onSave?: () => void
   editorRef?: MutableRefObject<editor.IStandaloneCodeEditor | undefined>
   monacoRef?: MutableRefObject<Monaco | undefined>
 }
@@ -22,6 +24,7 @@ export const EditorBox: React.FC<IEditorBox> = ({
   defaultValue,
   onLanguageChange,
   onChanges,
+  onSave,
   editorRef,
   monacoRef,
 }) => {
@@ -29,9 +32,42 @@ export const EditorBox: React.FC<IEditorBox> = ({
   const _eRef = useRef<editor.IStandaloneCodeEditor>()
   const _mRef = useRef<Monaco>()
   const { isInverted } = useTheme()
+  const [currentContent, setCurrentContent] = useState(defaultValue)
+  const [saveEvents, { next: emitSave }] = useSubject()
 
   useEffect(() => {
-    const action = _eRef.current?.addAction({
+    const sxn = saveEvents.subscribe(() => {
+      onSave && onSave()
+    })
+
+    return () => {
+      sxn.unsubscribe()
+    }
+  }, [onSave, _eRef.current])
+
+  useEffect(() => {
+    onChanges && onChanges(currentContent)
+  }, [currentContent])
+
+  useEffect(() => {
+    const saveAction = _eRef.current?.addAction({
+      id: "app-save",
+      label: "Save Changes",
+      contextMenuGroupId: "1_modification",
+      contextMenuOrder: 2,
+      keybindings: [KeyMod.CtrlCmd | KeyCode.KEY_S],
+      run() {
+        emitSave()
+      },
+    })
+
+    return () => {
+      saveAction?.dispose()
+    }
+  }, [_eRef.current, saveEvents])
+
+  useEffect(() => {
+    const makePrettierAction = _eRef.current?.addAction({
       id: "app-prettier-format",
       label: "Reformat with Prettier",
       contextMenuGroupId: "1_modification",
@@ -48,7 +84,7 @@ export const EditorBox: React.FC<IEditorBox> = ({
     })
 
     return () => {
-      action?.dispose()
+      makePrettierAction?.dispose()
     }
   }, [language, _eRef.current, trigger])
 
@@ -110,7 +146,7 @@ export const EditorBox: React.FC<IEditorBox> = ({
       onMount={handleEditorDidMount}
       defaultValue={defaultValue}
       onChange={(value) => {
-        onChanges && onChanges(value || "")
+        setCurrentContent(value || "")
       }}
     />
   )

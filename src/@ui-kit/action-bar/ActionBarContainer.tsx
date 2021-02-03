@@ -14,7 +14,6 @@ export const ActionBarContainer: React.FC<IActionBar> = ({ children, horizontal 
       tokens={{ childrenGap: "0.5rem" }}
       styles={{
         root: {
-          padding: "0.5rem",
           borderBottom: `${palette.neutralLight} solid 1px`,
         },
       }}

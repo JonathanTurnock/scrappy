@@ -15,12 +15,14 @@ export type IEditView = {
   onLanguageChange: (newLanguage: Language) => void
   content?: string
   onContentChange: (newContent: string) => void
+  onSave: () => void
 }
 export const EditView: React.FC<IEditView> = ({
   language,
   onLanguageChange,
   content,
   onContentChange,
+  onSave,
 }) => {
   const { palette } = useTheme()
 
@@ -38,6 +40,7 @@ export const EditView: React.FC<IEditView> = ({
         onLanguageChange={(language: string) => onLanguageChange(language as Language)}
         defaultValue={content || ""}
         onChanges={onContentChange}
+        onSave={onSave}
       />
       <Stack horizontal className="p-2 justify-content-end">
         <Dropdown

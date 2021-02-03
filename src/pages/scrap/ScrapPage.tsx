@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import { useHistory, useParams } from "react-router-dom"
-import { Breadcrumb, Pivot, PivotItem, Stack } from "@fluentui/react"
+import { Breadcrumb, MessageBarType, Pivot, PivotItem, Stack } from "@fluentui/react"
 import styled from "styled-components"
 import { useScrapOperations, useScrapSubscription } from "../../database"
 import { fdAlert } from "../../@ui-kit"
@@ -8,8 +8,11 @@ import { ActionBar } from "./components/ActionBar"
 import { MarkdownView } from "./components/MarkdownView"
 import { ObjectView } from "./components/ObjectView"
 import { EditView } from "./components/EditView"
+import { ScrapDetails } from "./components/ScrapDetails"
+import { useBoolean } from "@fluentui/react-hooks"
+import { useHotkeys } from "react-hotkeys-hook"
 import { Labels } from "./components/Labels"
-import { Title } from "./components/Title"
+import { useToasts } from "../../@ui-kit/notifications/useToasts"
 
 const ScrapTabs = styled(Pivot)`
   display: flex;
@@ -34,6 +37,7 @@ const ScrapTabs = styled(Pivot)`
 `
 
 export const ScrapPage: React.FC = () => {
+  const [detailsIsOpen, { toggle: toggleDetails }] = useBoolean(false)
   const { push } = useHistory()
   const { id } = useParams()
   const [scrap, { error }] = useScrapSubscription({ id })
@@ -42,6 +46,7 @@ export const ScrapPage: React.FC = () => {
   const [liveContent, setLiveContent] = useState(scrap?.content)
   const [contentType, setContentType] = useState(scrap?.contentType)
   const [labels, setLabels] = useState(scrap?.labels || [])
+  const { showToast } = useToasts()
 
   useEffect(() => {
     if (scrap) {
@@ -61,7 +66,7 @@ export const ScrapPage: React.FC = () => {
     }
   }, [scrap, error])
 
-  const handleSave = async () => {
+  const handleSave = useCallback(() => {
     if (scrap && liveTitle && contentType) {
       save({
         ...scrap,
@@ -69,35 +74,67 @@ export const ScrapPage: React.FC = () => {
         content: liveContent || "",
         contentType,
         labels: labels,
-      }).catch((e) => {
-        fdAlert({ title: "Failed to Save", text: e.message })
       })
+        .catch((e) => {
+          fdAlert({ title: "Failed to Save", text: e.message })
+        })
+        .then(() => {
+          showToast("Saved", { type: MessageBarType.success })
+        })
     } else {
       fdAlert({ title: "Failed to Save", text: "No Content Type Defined" })
     }
-  }
+  }, [liveTitle, liveContent, contentType, labels])
+
+  useHotkeys(
+    "ctrl+s",
+    () => {
+      handleSave()
+    },
+    [liveTitle, labels, liveContent, contentType]
+  )
 
   return (
     <Stack style={{ flex: "auto", overflow: "hidden" }}>
       {scrap && contentType && (
         <>
-          <ActionBar onSave={handleSave} />
+          <ActionBar onSave={handleSave} onDetails={toggleDetails} />
           <Stack style={{ overflow: "hidden" }} className="container flex-fill">
-            <Breadcrumb
-              items={[
-                { key: "scraps", text: "Scraps", onClick: () => push("/scraps") },
-                { key: "scrap", text: scrap.name },
-              ]}
-            />
-            <Stack style={{ paddingTop: "1rem" }} tokens={{ childrenGap: "0.5rem" }}>
-              <Title value={liveTitle || ""} onChange={setLiveTitle} />
-              <Labels onChange={setLabels} labels={labels} />
+            <Stack
+              style={{
+                display: "grid",
+                gridTemplateRows: "1fr 1fr",
+                alignItems: "center",
+              }}
+            >
+              <Breadcrumb
+                style={{ minWidth: "50%" }}
+                items={[
+                  { key: "scraps", text: "Scraps", onClick: () => push("/scraps") },
+                  { key: "scrap", text: scrap.name },
+                ]}
+              />
+              <Labels noLabel onChange={setLabels} labels={labels} />
             </Stack>
+            <ScrapDetails
+              isOpen={detailsIsOpen}
+              onDismiss={toggleDetails}
+              title={liveTitle || ""}
+              onTitleChange={setLiveTitle}
+              labels={labels}
+              onLabelsChange={setLabels}
+            />
             <ScrapTabs>
               <PivotItem className="scrap-tab" headerText="View" itemIcon="TextDocument">
-                {(contentType === "markdown" && (
-                  <MarkdownView contentType={contentType} content={liveContent || ""} />
-                )) || <ObjectView contentType={contentType} content={liveContent || ""} />}
+                {(() => {
+                  switch (contentType) {
+                    case "markdown":
+                      return <MarkdownView contentType={contentType} content={liveContent || ""} />
+                    case "yaml":
+                    case "json":
+                      return <ObjectView contentType={contentType} content={liveContent || ""} />
+                  }
+                })()}
               </PivotItem>
               <PivotItem className="scrap-tab" headerText="Edit" itemIcon="FileCode">
                 <EditView
@@ -105,6 +142,9 @@ export const ScrapPage: React.FC = () => {
                   onLanguageChange={setContentType}
                   content={liveContent}
                   onContentChange={setLiveContent}
+                  onSave={() => {
+                    handleSave()
+                  }}
                 />
               </PivotItem>
             </ScrapTabs>

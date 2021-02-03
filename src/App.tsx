@@ -1,17 +1,16 @@
-import React, { useEffect, useState } from "react"
-import { HashRouter, Route, Switch } from "react-router-dom"
-import { ThemeProvider } from "@fluentui/react-theme-provider"
+import React, { useMemo } from "react"
+import { Route, Switch, useHistory } from "react-router-dom"
 import styled from "styled-components"
 import { useBoolean } from "@fluentui/react-hooks"
-import { ScrapListPage, ScrapPage } from "./pages"
-import { SideNav } from "./nav"
-import { darkTheme, lightTheme } from "./theme"
-import { IconButton, loadTheme } from "@fluentui/react"
-import { DatabaseProvider, scrapsCollection } from "./database"
+import { PrimaryButton } from "@fluentui/react"
+import { DatabaseProvider, InitPhase, scrapsCollection, useDatabaseInitializer } from "./database"
 import { RxCollectionCreatorBase } from "rxdb/dist/types/types"
 import { Provider } from "react-redux"
+import { AppThemeProvider, AutoStack, ToastProvider, useThemeController } from "./@ui-kit"
 import { store } from "./app/store"
-import { useMediaQuery } from "react-responsive"
+import { AppBar } from "./components/app-bar/AppBar"
+import { SideNav } from "./nav"
+import { ScrapListPage, ScrapPage } from "./pages"
 
 const DATABASE_NAME = "scrappydb"
 const SCHEMAS: Record<string, RxCollectionCreatorBase> = {
@@ -22,7 +21,8 @@ const DATABASE_OPTS = { inMemory: false, password: undefined }
 
 const AppContainer = styled.div`
   flex: auto;
-  display: flex;
+  display: grid;
+  grid-template-rows: 48px auto;
   overflow: hidden;
 `
 
@@ -33,47 +33,67 @@ const Main = styled.main`
 `
 
 const App = () => {
+  const { push } = useHistory()
+  const [initPhase, transitionTo] = useDatabaseInitializer()
   const [isOpen, { setTrue: openPanel, setFalse: dismissPanel }] = useBoolean(false)
-  const prefersDark = useMediaQuery({ query: "(prefers-color-scheme: dark)" })
-  const [theme, setTheme] = useState(prefersDark ? darkTheme : lightTheme)
+  const [theme, { nextTheme }] = useThemeController()
 
-  useEffect(() => {
-    if (prefersDark) {
-      setTheme(darkTheme)
-      loadTheme(darkTheme)
-    } else {
-      setTheme(lightTheme)
-      loadTheme(lightTheme)
-    }
-  }, [prefersDark])
+  const phaseTransitions = useMemo(
+    () => ({
+      [InitPhase.LOCKED]: transitionTo.unlocking,
+      [InitPhase.UNLOCKING]: transitionTo.locked,
+      [InitPhase.UNLOCKED]: transitionTo.locked,
+    }),
+    []
+  )
 
   return (
-    <ThemeProvider theme={theme} style={{ display: "flex", flex: "auto" }}>
+    <AppThemeProvider userTheme={theme}>
       <Provider store={store}>
-        <HashRouter>
-          <AppContainer>
-            <SideNav isOpen={isOpen} onDismiss={dismissPanel} />
-            <Main>
-              <DatabaseProvider
-                databaseName={DATABASE_NAME}
-                schemas={SCHEMAS}
-                options={DATABASE_OPTS}
-              >
-                <Switch>
-                  <Route path="/scrap/:id" component={ScrapPage} />
-                  <Route path="/" component={ScrapListPage} />
-                </Switch>
-              </DatabaseProvider>
-            </Main>
-          </AppContainer>
-        </HashRouter>
-        <IconButton
-          onClick={openPanel}
-          iconProps={{ iconName: "CollapseMenu" }}
-          style={{ position: "fixed", bottom: "2rem", left: "2rem" }}
-        />
+        <AppContainer>
+          <AppBar
+            theme={theme}
+            onToggleTheme={nextTheme}
+            onBurger={openPanel}
+            unlocked={initPhase === InitPhase.UNLOCKED}
+            onToggleLock={phaseTransitions[initPhase]}
+            onBrand={() => push("/")}
+          />
+          <Main>
+            <ToastProvider>
+              {(() => {
+                switch (initPhase) {
+                  case InitPhase.LOCKED:
+                    return (
+                      <AutoStack horizontalAlign="center" verticalAlign="center">
+                        <PrimaryButton onClick={transitionTo.unlocking} text="Unlock" />
+                      </AutoStack>
+                    )
+                  case InitPhase.UNLOCKING:
+                  case InitPhase.UNLOCKED:
+                    return (
+                      <DatabaseProvider
+                        databaseName={DATABASE_NAME}
+                        schemas={SCHEMAS}
+                        options={DATABASE_OPTS}
+                        lockState={initPhase}
+                        onLock={transitionTo.locked}
+                        onUnlock={transitionTo.unlocked}
+                      >
+                        <Switch>
+                          <Route path="/scrap/:id" component={ScrapPage} />
+                          <Route path="/" component={ScrapListPage} />
+                        </Switch>
+                      </DatabaseProvider>
+                    )
+                }
+              })()}
+            </ToastProvider>
+          </Main>
+        </AppContainer>
+        <SideNav isOpen={isOpen} onDismiss={dismissPanel} />
       </Provider>
-    </ThemeProvider>
+    </AppThemeProvider>
   )
 }
 

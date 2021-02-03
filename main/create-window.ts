@@ -43,9 +43,10 @@ export const createWindow = (): BrowserWindow => {
     Menu.setApplicationMenu(new Menu())
   }
 
-  window.on("closed", () => {
-    logger.info("Window Closed, Quitting Application")
-    app.quit()
+  app.on("window-all-closed", () => {
+    if (process.platform !== "darwin") {
+      app.quit()
+    }
   })
 
   return window
