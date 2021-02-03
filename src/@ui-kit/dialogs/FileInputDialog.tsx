@@ -27,7 +27,7 @@ export const FileInputDialog: React.FC<IFileInputDialog & AwaitableDialogProps<F
     // Debounce to ensure the event handler body fires after the upload change event
     const handleFocusBack = debounce(() => {
       setIsFileDialogOpen(false)
-    }, 250)
+    }, 2000)
     window.addEventListener("focus", handleFocusBack)
     return () => {
       window.removeEventListener("focus", handleFocusBack)

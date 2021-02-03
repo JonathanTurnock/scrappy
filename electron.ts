@@ -6,7 +6,7 @@ import appProtocol from "./main/app.protocol"
 
 info("Logging Directory", resolve(app.getPath("logs")))
 
-let win: BrowserWindow
+let win: BrowserWindow | undefined
 
 protocol.registerSchemesAsPrivileged([
   {
@@ -18,11 +18,17 @@ protocol.registerSchemesAsPrivileged([
 app.on("ready", () => {
   protocol.registerFileProtocol("app", appProtocol(resolve(__dirname)))
   win = createWindow()
+  win.on("closed", () => {
+    win = undefined
+  })
 })
 
 app.on("activate", () => {
-  if (win === null) {
+  if (!win) {
     win = createWindow()
+    win.on("closed", () => {
+      win = undefined
+    })
   }
 })
 
