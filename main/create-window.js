@@ -40,9 +40,10 @@ exports.createWindow = function () {
     if (!env_helpers_1.isDev) {
         electron_1.Menu.setApplicationMenu(new electron_1.Menu());
     }
-    exports.window.on("closed", function () {
-        logger.info("Window Closed, Quitting Application");
-        electron_1.app.quit();
+    electron_1.app.on("window-all-closed", function () {
+        if (process.platform !== "darwin") {
+            electron_1.app.quit();
+        }
     });
     return exports.window;
 };

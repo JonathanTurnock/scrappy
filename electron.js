@@ -16,19 +16,20 @@ electron_1.protocol.registerSchemesAsPrivileged([
 electron_1.app.on("ready", function () {
     electron_1.protocol.registerFileProtocol("app", app_protocol_1["default"](path_1.resolve(__dirname)));
     win = create_window_1.createWindow();
+    win.on("closed", function () {
+        win = undefined;
+    });
 });
-electron_1.app.on("window-all-closed", function () {
-    if (process.platform !== "darwin") {
-        electron_1.app.quit();
+electron_1.app.on("activate", function () {
+    if (!win) {
+        win = create_window_1.createWindow();
+        win.on("closed", function () {
+            win = undefined;
+        });
     }
 });
 electron_1.app.on("web-contents-created", function (event, contents) {
     contents.on("will-navigate", function (event) {
         event.preventDefault();
     });
-});
-electron_1.app.on("activate", function () {
-    if (win === null) {
-        create_window_1.createWindow();
-    }
 });
